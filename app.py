@@ -146,7 +146,7 @@ def get_ideas(topic: str, num_ideas: int, temperature: float, model: str) -> lis
                 {"role": "user", "content": f"Topic: {topic} \n Your idea: \n"}
             ],
             max_tokens=800,
-            n=num_ideas,
+            n=num_ideas_mult,
             stop=None,
             temperature=temperature,
         )
