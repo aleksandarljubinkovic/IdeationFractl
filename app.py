@@ -19,6 +19,36 @@ ANTHROPIC_API_KEY = st.secrets["ANTHROPIC_API_KEY"]
 gpt_model = "ft:gpt-3.5-turbo-0125:personal:idea-generator:9DgQ5nsD"
 
 
+custom_css = """
+<style>
+    .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+        font-size: 18px;
+        font-weight: bold;
+        color: #1f77b4;
+    }
+    .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p:hover {
+        color: #ff7f0e;
+    }
+    .stTabs [data-baseweb="tab-panel"] {
+        background-color: #f8f8f8;
+        padding: 20px;
+        border-radius: 5px;
+    }
+    .stTabs [data-baseweb="tab-panel"] h2 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1f77b4;
+        margin-bottom: 10px;
+    }
+    .stTabs [data-baseweb="tab-panel"] p {
+        font-size: 16px;
+        color: #333;
+    }
+</style>"""
+
+
+st.markdown(custom_css, unsafe_allow_html=True)
+
 # App title and description
 st.set_page_config(page_title="Idea Generation and Refinement", layout="wide")
 
@@ -296,7 +326,6 @@ def export_briefs(idea_briefs: list) -> None:
         st.error(f"Error exporting idea briefs: {str(e)}")
 
 tab1, tab2, tab3, tab4 = st.tabs(["Idea Brainstorming with Fractl Finetuned Model", "Idea Evaluation with Claude", "Idea Selection", "Download Final Results"])
-
 with tab1:
     st.subheader("Idea Generation")
     topic = st.text_input("Enter a topic", help="Provide a topic for idea generation")
