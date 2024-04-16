@@ -2,3 +2,4 @@ streamlit
 openai
 anthropic
 reportlab
+stqdm
