@@ -252,7 +252,7 @@ def generate_briefs(selected_ideas: list, model: str) -> list:
             idea_brief = json.loads(fixed_json)
             return idea_brief
 
-        with ThreadPoolExecutor() as executor:
+        with ThreadPoolExecutor(max_workers=10) as executor:
             futures = [executor.submit(generate_idea_brief, idea) for idea in selected_ideas]
             idea_briefs = [future.result() for future in stqdm(as_completed(futures), total=len(futures))]
 
@@ -369,7 +369,7 @@ with tab2:
             st.dataframe(ideas_df, use_container_width=True,  hide_index=True)  # Display ideas without index column
         
         claude_models = ["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"]
-        selected_model = st.selectbox("Select Claude Model", options=claude_models)
+        selected_model = st.selectbox("Select Claude Model", options=claude_models, index=1)
         
         evaluate_button = st.button("Evaluate and Refine Ideas")
         if evaluate_button:
