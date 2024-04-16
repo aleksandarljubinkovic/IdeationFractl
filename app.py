@@ -353,7 +353,7 @@ with tab1:
                 
                 ideas_df = pd.DataFrame(generated_ideas, columns=["Ideas"])
                 with st.expander("View Generated Ideas", expanded=True):
-                    st.dataframe(ideas_df, use_container_width=True)  # Display ideas without index column
+                    st.table(ideas_df, use_container_width=True)  # Display ideas without index column
             except Exception as e:
                 st.error(f"An error occurred during idea generation for topic '{topic}' with {num_ideas} ideas: {str(e)}")
 
