@@ -161,20 +161,16 @@ def get_ideas(topic: str, num_ideas: int, temperature: float, model: str) -> lis
 def evaluate_ideas(generated_ideas: list, num_ideas: int, model: str) -> list:
     try:
         system_prompt = "You are an expert editor at a major news publication. Your task is to select the most newsworthy and interesting story ideas from a list of brainstormed ideas. For your selection, propose an optimized title, description, justification, specific step by step methodology, and names with links if possible to required datasets/sources."
-
+        
         def get_idea_summary(idea):
             prompt = f"""Here is a brainstormed idea:
-
             {idea}
-
             Please provide concrete details for your chosen idea in the following format:
-
             Title: [Enhanced title for the idea]
             Description: [Detailed description of the idea, including the lede, newsworthy hooks, target audience, and why they should care]
             Justification: [Justification for selecting this idea]
             Methodology: [Methodology for producing this idea, including feasibility within a 2-week timeline]
             Datasets/Sources: [Datasets, sources, technologies, and tools needed to accomplish this idea]"""
-
             response = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY).messages.create(
                 system=system_prompt,
                 model=model,
@@ -182,13 +178,23 @@ def evaluate_ideas(generated_ideas: list, num_ideas: int, model: str) -> list:
                 max_tokens=2000,
             )
             return response.content[0].text
-
+        
+        idea_summaries = []
+        progress_bar = st.progress(0)
+        
         with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [executor.submit(get_idea_summary, idea) for idea in generated_ideas[:num_ideas]]
-            idea_summaries = [future.result() for future in stqdm(as_completed(futures), total=len(futures))]
-
+            futures = []
+            for idea in generated_ideas[:num_ideas]:
+                future = executor.submit(get_idea_summary, idea)
+                futures.append(future)
+            
+            for i, future in enumerate(as_completed(futures)):
+                idea_summary = future.result()
+                idea_summaries.append(idea_summary)
+                progress = (i + 1) / len(futures)
+                progress_bar.progress(progress)
+        
         return idea_summaries[:num_ideas]
-
     except anthropic.APIError as e:
         st.error(f"Anthropic API Error: {str(e)}")
         raise
