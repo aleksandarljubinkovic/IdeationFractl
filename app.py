@@ -136,13 +136,9 @@ def get_ideas(topic: str, num_ideas: int, temperature: float, model: str) -> lis
         list: The generated ideas.
     """
     num_ideas = (num_ideas*10)
+
     try:
         ideas = []
-        progress_text = "Generating ideas..."
-        my_bar = st.progress(0, text=progress_text)
-        total_batches = (num_ideas + 99) // 100
-        current_batch = 0
-
         while num_ideas > 0:
             batch_size = min(num_ideas, 100)
             response = openai.chat.completions.create(
@@ -159,10 +155,6 @@ def get_ideas(topic: str, num_ideas: int, temperature: float, model: str) -> lis
             batch_ideas = [choice.message.content.strip() for choice in response.choices]
             ideas.extend(batch_ideas)
             num_ideas -= batch_size
-            current_batch += 1
-            progress = current_batch / total_batches
-            my_bar.progress(progress, text=progress_text)
-
         return ideas
     except Exception as e:
         st.error(f"Error: {str(e)}")
@@ -343,8 +335,8 @@ tab1, tab2, tab3, tab4 = st.tabs(["Idea Brainstorming with Fractl Finetuned Mode
 with tab1:
     st.subheader("Idea Generation")
     topic = st.text_input("Enter a topic", help="Provide a topic for idea generation")
-    num_ideas = st.number_input("Number of ideas to generate", min_value=1, max_value=50, value=10, help="Select the number of ideas to generate (1-1000)")
-    temperature = st.slider("Temperature", min_value=0.0, max_value=1.2, value=0.4, step=0.1, help="Adjust the creativity level (0.0-1.0)")
+    num_ideas = st.number_input("Number of ideas to generate", min_value=1, max_value=1000, value=10, help="Select the number of ideas to generate (1-1000)")
+    temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7, step=0.1, help="Adjust the creativity level (0.0-1.0)")
     
     generate_button = st.button("Brainstorm Ideas")
     if generate_button:
@@ -352,18 +344,23 @@ with tab1:
             st.warning("Please enter a topic.")
         else:
             try:
+                progress_text = "Generating ideas..."
+                my_bar = st.progress(0, text=progress_text)
+                
                 generated_ideas = get_ideas(topic, num_ideas, temperature, gpt_model)
+                
+                for i in range(num_ideas):
+                    progress = (i + 1) / num_ideas
+                    my_bar.progress(progress, text=progress_text)
                 
                 st.session_state.generated_ideas = generated_ideas
                 st.write("Generated Ideas:")
                 
                 ideas_df = pd.DataFrame(generated_ideas, columns=["Ideas"])
                 with st.expander("View Generated Ideas", expanded=True):
-                    for idea in generated_ideas:
-                        st.write(idea)
+                    st.dataframe(ideas_df, use_container_width=True, hide_index=True)  # Display ideas without index column
             except Exception as e:
                 st.error(f"An error occurred during idea generation for topic '{topic}' with {num_ideas} ideas: {str(e)}")
-
 
 with tab2:
     st.subheader("Idea Evaluation")
