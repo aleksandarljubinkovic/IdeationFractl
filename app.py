@@ -230,40 +230,45 @@ def fix_json_with_gpt(json_str, expected_format):
     return fixed_json
 
 @st.cache_data
+def generate_idea_brief(idea, model):
+    prompt = f"""Enhance and make more specific each part of the brief, especially providing sources for datasets needed for the idea and methodological guidance to help prevent roadblocks or timesucks.
+    
+    Idea: {idea}"""
+    
+    response = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY).messages.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=4000,
+    )
+    content = response.content[0].text
+    
+    expected_format = """
+    {
+        "title": "Enhanced title for the idea",
+        "description": "Detailed description of the idea, including the lede, newsworthy hooks, target audience, and why they should care",
+        "justification": "Justification for selecting this idea",
+        "methodology": "Methodology for producing this idea, including feasibility within a 2-week timeline",
+        "datasets_sources": "Datasets, sources, technologies, and tools needed to accomplish this idea"
+    }
+    """
+    
+    fixed_json = fix_json_with_gpt(content, expected_format)
+    idea_brief = json.loads(fixed_json)
+    return idea_brief
+
+@st.cache_data
 def generate_briefs(selected_ideas: list, model: str) -> list:
     try:
-        def generate_idea_brief(idea):
-            prompt = f"""Enhance and make more specific each part of the brief, especially providing sources for datasets needed for the idea and methodological guidance to help prevent roadblocks or timesucks.
-            
-            Idea: {idea}"""
-            
-            response = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY).messages.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=4000,
-            )
-            content = response.content[0].text
-            
-            expected_format = """
-            {
-                "title": "Enhanced title for the idea",
-                "description": "Detailed description of the idea, including the lede, newsworthy hooks, target audience, and why they should care",
-                "justification": "Justification for selecting this idea",
-                "methodology": "Methodology for producing this idea, including feasibility within a 2-week timeline",
-                "datasets_sources": "Datasets, sources, technologies, and tools needed to accomplish this idea"
-            }
-            """
-            
-            fixed_json = fix_json_with_gpt(content, expected_format)
-            idea_brief = json.loads(fixed_json)
-            return idea_brief
-
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [executor.submit(generate_idea_brief, idea) for idea in selected_ideas]
-            idea_briefs = [future.result() for future in stqdm(as_completed(futures), total=len(futures))]
-
+        idea_briefs = []
+        progress_bar = st.progress(0)
+        
+        for i, idea in enumerate(selected_ideas):
+            idea_brief = generate_idea_brief(idea, model)
+            idea_briefs.append(idea_brief)
+            progress = (i + 1) / len(selected_ideas)
+            progress_bar.progress(progress)
+        
         return idea_briefs
-
     except anthropic.APIError as e:
         st.error(f"Anthropic API Error: {str(e)}")
         raise
