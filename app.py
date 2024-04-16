@@ -127,35 +127,32 @@ Get ready to explore a world of creative possibilities and take your projects to
 def get_ideas(topic: str, num_ideas: int, temperature: float, model: str) -> list:
     """
     Call GPT-3 API to generate ideas.
+
     Args:
         topic (str): The topic for idea generation.
         num_ideas (int): The number of ideas to generate.
         temperature (float): The temperature value for controlling creativity.
         model (str): The GPT-3 model to use for idea generation.
+
     Returns:
         list: The generated ideas.
     """
-    num_ideas = (num_ideas*10)
-
+    num_ideas_mult = (num_ideas*10)
     try:
-        ideas = []
-        while num_ideas > 0:
-            batch_size = min(num_ideas, 100)
-            response = openai.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": "You are an AI assistant that generates creative ideas."},
-                    {"role": "user", "content": f"Generate {batch_size} ideas for the topic: {topic}"}
-                ],
-                max_tokens=400,
-                n=batch_size,
-                stop=None,
-                temperature=temperature,
-            )
-            batch_ideas = [choice.message.content.strip() for choice in response.choices]
-            ideas.extend(batch_ideas)
-            num_ideas -= batch_size
+        response = openai.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "Generate the most newsworthy possible idea for the given topic. Start your answer with Title:"},
+                {"role": "user", "content": f"Topic: {topic} \n Your idea: \n"}
+            ],
+            max_tokens=800,
+            n=num_ideas,
+            stop=None,
+            temperature=temperature,
+        )
+        ideas = [choice.message.content.strip() for choice in response.choices]
         return ideas
+
     except Exception as e:
         st.error(f"Error: {str(e)}")
         raise
