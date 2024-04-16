@@ -19,7 +19,7 @@ ANTHROPIC_API_KEY = st.secrets["ANTHROPIC_API_KEY"]
 gpt_model = "ft:gpt-3.5-turbo-0125:personal:idea-generator:9DgQ5nsD"
 
 
-st.markdown(custom_css, unsafe_allow_html=True)
+
 
 # App title and description
 st.set_page_config(page_title="Idea Generation and Refinement", layout="wide")
@@ -60,7 +60,7 @@ custom_css = """
 </style>"""
 
 
-
+st.markdown(custom_css, unsafe_allow_html=True)
 
 # Define colors and styles
 primary_color = "#1f77b4"
