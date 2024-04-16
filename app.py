@@ -71,8 +71,23 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.title("Fractl Trained Ideation Pipeline")
-st.write("Generate, evaluate, and refine ideas for your topic with a finetuned GPT-3.5 trained on thousands of historical Fractl campaign ideas.")
-
+st.markdown("""
+<div style="background-color: #f0f0f0; padding: 20px; border-radius: 10px;">
+<h2 style="color: #333;">Welcome to the Idea Generation Tool!</h2>
+<p style="font-size: 18px;">
+This tool harnesses the power of advanced AI models to help you generate creative and unique ideas for your projects. Here's how it works:
+</p>
+<ol style="font-size: 16px;">
+<li>Select the desired number of finalized ideas you need.</li>
+<li>Our fine-tuned GPT-3.5 model, trained on thousands of past Fractl ideas, will generate a pool of initial ideas based on your input.</li>
+<li>The Claude-3 model will then evaluate and curate the best ideas from the generated pool.</li>
+<li>For each idea you like best, the tool will develop detailed briefs to help you understand and implement them effectively.</li>
+</ol>
+<p style="font-size: 18px;">
+Get ready to explore a world of creative possibilities and take your projects to the next level!
+</p>
+</div>
+""", unsafe_allow_html=True)
 @st.cache_data
 def get_ideas(topic: str, num_ideas: int, temperature: float, model: str) -> list:
     """
