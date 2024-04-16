@@ -182,7 +182,7 @@ def evaluate_ideas(generated_ideas: list, num_ideas: int, model: str) -> list:
         idea_summaries = []
         progress_bar = st.progress(0)
         
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        with ThreadPoolExecutor(max_workers=14) as executor:
             futures = []
             for idea in generated_ideas[:num_ideas]:
                 future = executor.submit(get_idea_summary, idea)
@@ -262,11 +262,17 @@ def generate_briefs(selected_ideas: list, model: str) -> list:
         idea_briefs = []
         progress_bar = st.progress(0)
         
-        for i, idea in enumerate(selected_ideas):
-            idea_brief = generate_idea_brief(idea, model)
-            idea_briefs.append(idea_brief)
-            progress = (i + 1) / len(selected_ideas)
-            progress_bar.progress(progress)
+        with ThreadPoolExecutor(max_workers=12) as executor:
+            futures = []
+            for idea in selected_ideas:
+                future = executor.submit(generate_idea_brief, idea, model)
+                futures.append(future)
+            
+            for i, future in enumerate(as_completed(futures)):
+                idea_brief = future.result()
+                idea_briefs.append(idea_brief)
+                progress = (i + 1) / len(futures)
+                progress_bar.progress(progress)
         
         return idea_briefs
     except anthropic.APIError as e:
