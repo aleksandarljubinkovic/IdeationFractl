@@ -329,6 +329,8 @@ def export_briefs(idea_briefs: list) -> None:
         st.error(f"Error exporting idea briefs: {str(e)}")
 
 tab1, tab2, tab3, tab4 = st.tabs(["Idea Brainstorming with Fractl Finetuned Model", "Idea Evaluation with Claude", "Idea Selection", "Download Final Results"])
+
+
 with tab1:
     st.subheader("Idea Generation")
     topic = st.text_input("Enter a topic", help="Provide a topic for idea generation")
@@ -346,16 +348,12 @@ with tab1:
                 
                 generated_ideas = get_ideas(topic, num_ideas, temperature, gpt_model)
                 
-                for i in range(num_ideas):
-                    progress = (i + 1) / num_ideas
-                    my_bar.progress(progress, text=progress_text)
-                
                 st.session_state.generated_ideas = generated_ideas
                 st.write("Generated Ideas:")
                 
                 ideas_df = pd.DataFrame(generated_ideas, columns=["Ideas"])
                 with st.expander("View Generated Ideas", expanded=True):
-                    st.dataframe(ideas_df, use_container_width=True, hide_index=True)  # Display ideas without index column
+                    st.dataframe(ideas_df, use_container_width=True)  # Display ideas without index column
             except Exception as e:
                 st.error(f"An error occurred during idea generation for topic '{topic}' with {num_ideas} ideas: {str(e)}")
 
