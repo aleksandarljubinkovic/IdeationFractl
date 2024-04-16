@@ -19,6 +19,19 @@ ANTHROPIC_API_KEY = st.secrets["ANTHROPIC_API_KEY"]
 gpt_model = "ft:gpt-3.5-turbo-0125:personal:idea-generator:9DgQ5nsD"
 
 
+st.markdown(custom_css, unsafe_allow_html=True)
+
+# App title and description
+st.set_page_config(page_title="Idea Generation and Refinement", layout="wide")
+
+# Set up logging
+logging.basicConfig(filename="app.log", level=logging.INFO)
+
+def log_usage(message):
+    logging.info(f"Usage: {message}")
+
+log_usage("App started")
+
 custom_css = """
 <style>
     .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
@@ -47,18 +60,7 @@ custom_css = """
 </style>"""
 
 
-st.markdown(custom_css, unsafe_allow_html=True)
 
-# App title and description
-st.set_page_config(page_title="Idea Generation and Refinement", layout="wide")
-
-# Set up logging
-logging.basicConfig(filename="app.log", level=logging.INFO)
-
-def log_usage(message):
-    logging.info(f"Usage: {message}")
-
-log_usage("App started")
 
 # Define colors and styles
 primary_color = "#1f77b4"
