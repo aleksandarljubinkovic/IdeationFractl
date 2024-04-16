@@ -75,7 +75,6 @@ st.write("Generate, evaluate, and refine ideas for your topic with a finetuned G
 
 @st.cache_data
 def get_ideas(topic: str, num_ideas: int, temperature: float, model: str) -> list:
-    num_ideas = (num_ideas*50)
     """
     Call GPT-3 API to generate ideas.
     Args:
@@ -86,19 +85,26 @@ def get_ideas(topic: str, num_ideas: int, temperature: float, model: str) -> lis
     Returns:
         list: The generated ideas.
     """
+    num_ideas = (num_ideas*10)
+
     try:
-        response = openai.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": "You are an AI assistant that generates creative ideas."},
-                {"role": "user", "content": f"Generate {num_ideas} ideas for the topic: {topic}"}
-            ],
-            max_tokens=400,
-            n=num_ideas,
-            stop=None,
-            temperature=temperature,
-        )
-        ideas = [choice.message.content.strip() for choice in response.choices]
+        ideas = []
+        while num_ideas > 0:
+            batch_size = min(num_ideas, 100)
+            response = openai.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": "You are an AI assistant that generates creative ideas."},
+                    {"role": "user", "content": f"Generate {batch_size} ideas for the topic: {topic}"}
+                ],
+                max_tokens=400,
+                n=batch_size,
+                stop=None,
+                temperature=temperature,
+            )
+            batch_ideas = [choice.message.content.strip() for choice in response.choices]
+            ideas.extend(batch_ideas)
+            num_ideas -= batch_size
         return ideas
     except Exception as e:
         st.error(f"Error: {str(e)}")
@@ -126,7 +132,7 @@ def evaluate_ideas(generated_ideas: list, num_ideas: int, model: str) -> list:
                 system=system_prompt,
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=1000,
+                max_tokens=2000,
             )
             return response.content[0].text
 
