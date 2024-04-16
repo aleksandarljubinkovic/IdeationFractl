@@ -22,7 +22,7 @@ gpt_model = "ft:gpt-3.5-turbo-0125:personal:idea-generator:9DgQ5nsD"
 
 
 # App title and description
-st.set_page_config(page_title="Idea Generation and Refinement", layout="wide")
+st.set_page_config(page_title="Fractl FineTuned Automated Idea Generation and Refinement", layout="wide")
 
 # Set up logging
 logging.basicConfig(filename="app.log", level=logging.INFO)
@@ -110,8 +110,8 @@ This tool harnesses the power of advanced AI models to help you generate creativ
 </p>
 <ol style="font-size: 16px;">
 <li>Select the desired number of finalized ideas you need.</li>
-<li>Our fine-tuned GPT-3.5 model, trained on thousands of past Fractl ideas, will generate a pool of initial ideas based on your input.</li>
-<li>The Claude-3 model will then evaluate and curate the best ideas from the generated pool.</li>
+<li>Our fine-tuned GPT-3.5 model, trained on thousands of past Fractl ideas, will brainstorm an initial pool of 10x the number of initial ideas requested.</li>
+<li>The Claude-3 model will then evaluate all these ideas at once and curate the best ideas from the generated pool using Fractl's internal rubric.</li>
 <li>For each idea you like best, the tool will develop detailed briefs to help you understand and implement them effectively.</li>
 </ol>
 <p style="font-size: 18px;">
