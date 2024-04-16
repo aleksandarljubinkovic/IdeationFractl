@@ -73,7 +73,6 @@ st.markdown(f"""
 st.title("Fractl Trained Ideation Pipeline")
 st.markdown("""
 <div style="background-color: #f0f0f0; padding: 20px; border-radius: 10px;">
-<h2 style="color: #333;">Welcome to the Idea Generation Tool!</h2>
 <p style="font-size: 18px;">
 This tool harnesses the power of advanced AI models to help you generate creative and unique ideas for your projects. Here's how it works:
 </p>
