@@ -350,10 +350,10 @@ tab1, tab2, tab3, tab4 = st.tabs(["Idea Brainstorming with Fractl Finetuned Mode
 
 with tab1:
     st.subheader("Idea Generation")
+    ANTHROPIC_API_KEY = st.text_input("Enter your Anthropic API Key", help="You need an Anthropic API Key to run this tool.")
     topic = st.text_input("Enter a topic", help="Provide a topic for idea generation")
     num_ideas = st.number_input("Number of ideas to generate", min_value=1, max_value=12, value=6, help="Select the number of ideas to generate (1-1000)")
     temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7, step=0.1, help="Adjust the creativity level (0.0-1.0)")
-    ANTHROPIC_API_KEY = st.text_input("Enter your Anthropic API Key", help="You need an Anthropic API Key to run this tool.")
 
     generate_button = st.button("Brainstorm Ideas")
     if generate_button:
